@@ -8,7 +8,8 @@ module.exports = function(grunt) {
 		clientViews: ['public/modules/**/views/**/*.html'],
 		clientJS: ['public/js/*.js', 'public/modules/**/*.js'],
 		clientCSS: ['public/modules/**/*.css'],
-		mochaTests: ['app/tests/**/*.js']
+		mochaTests: ['app/tests/**/*.js'],
+        sass: 'public/scss/*.scss'
 	};
 
 	// Project Configuration
@@ -45,6 +46,13 @@ module.exports = function(grunt) {
 				files: watchFiles.clientCSS,
 				tasks: ['csslint'],
 				options: {
+					livereload: true
+				}
+			},
+            sass: {
+			    files: watchFiles.sass,
+			    tasks: ['sass:dev'],
+			    options: {
 					livereload: true
 				}
 			}
@@ -139,6 +147,28 @@ module.exports = function(grunt) {
 			unit: {
 				configFile: 'karma.conf.js'
 			}
+		},
+        /**
+		 * Sass
+		 */
+		sass: {
+		  dev: {		    
+		    files: {
+		      'public/css/style.css': 'public/scss/*.scss'
+		      //next line is not necessary if you include your bootstrap into the *.scss files
+		      //'public/css/bootstrap.css': 'public/lib/bootstrap-sass-official/vendor/assets/stylesheets/bootstrap.scss'		      		     
+		    }
+		  },
+		  dist: {
+		  	//you could use this as part of the build job (instead of using cssmin)
+		    options: {
+		      style: 'compressed',
+		      compass: false
+		    },
+		    files: {
+		      'public/dist/style.min.css': 'public/scss/*.scss'
+		    }
+		  }
 		}
 	});
 
@@ -158,7 +188,7 @@ module.exports = function(grunt) {
 	});
 
 	// Default task(s).
-	grunt.registerTask('default', ['lint', 'concurrent:default']);
+	grunt.registerTask('default', ['lint', 'sass:dev', 'concurrent:default']);
 
 	// Debug task.
 	grunt.registerTask('debug', ['lint', 'concurrent:debug']);
